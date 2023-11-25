@@ -11,14 +11,25 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, IsOptional } from "class-validator";
+import { BookingOrder } from "../../bookingOrder/base/BookingOrder";
+import { ValidateNested, IsOptional, IsDate, IsString } from "class-validator";
 import { Type } from "class-transformer";
 import { IsJSONValue } from "@app/custom-validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
+import { StoreEntity } from "../../storeEntity/base/StoreEntity";
 
 @ObjectType()
 class User {
+  @ApiProperty({
+    required: false,
+    type: () => [BookingOrder],
+  })
+  @ValidateNested()
+  @Type(() => BookingOrder)
+  @IsOptional()
+  bookingTransactions?: Array<BookingOrder>;
+
   @ApiProperty({
     required: true,
   })
@@ -58,11 +69,29 @@ class User {
   lastName!: string | null;
 
   @ApiProperty({
+    required: false,
+    type: () => [BookingOrder],
+  })
+  @ValidateNested()
+  @Type(() => BookingOrder)
+  @IsOptional()
+  owningBookingOrder?: Array<BookingOrder>;
+
+  @ApiProperty({
     required: true,
   })
   @IsJSONValue()
   @Field(() => GraphQLJSON)
   roles!: JsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => [StoreEntity],
+  })
+  @ValidateNested()
+  @Type(() => StoreEntity)
+  @IsOptional()
+  storeEntities?: Array<StoreEntity>;
 
   @ApiProperty({
     required: true,

@@ -8,12 +8,72 @@ generator client {
 }
 
 model User {
-  createdAt DateTime @default(now())
-  firstName String?
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  lastName  String?
-  password  String
-  roles     Json
-  updatedAt DateTime @updatedAt
-  username  String   @unique
+  bookingTransactions BookingOrder[] @relation(name: "createdBy")
+  createdAt           DateTime       @default(now())
+  firstName           String?
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
+  lastName            String?
+  owningBookingOrder  BookingOrder[] @relation(name: "owningBookingOrder")
+  password            String
+  roles               Json
+  storeEntities       StoreEntity[]
+  updatedAt           DateTime       @updatedAt
+  username            String         @unique
+}
+
+model BookingOrder {
+  bookingNo     String?
+  createdAt     DateTime     @default(now())
+  createdBy     User?        @relation(name: "createdBy", fields: [id], references: [id])
+  id            String?      @db.ObjectId
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  owner         User?        @relation(name: "owningBookingOrder", fields: [id], references: [id])
+  id            String?      @db.ObjectId
+  resource      Resource?    @relation(fields: [resourceId], references: [id])
+  resourceId    String?      @db.ObjectId
+  storeEntity   StoreEntity? @relation(fields: [storeEntityId], references: [id])
+  storeEntityId String?      @db.ObjectId
+  updatedAt     DateTime     @updatedAt
+}
+
+model Resource {
+  bookingTransactions BookingOrder[]
+  createdAt           DateTime        @default(now())
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  manufacturer        String?
+  name                String?
+  storeResources      StoreResource[]
+  updatedAt           DateTime        @updatedAt
+  vendor              String?
+}
+
+model StoreEntity {
+  bookingTransactions BookingOrder[]
+  createdAt           DateTime               @default(now())
+  id                  String                 @id @default(auto()) @map("_id") @db.ObjectId
+  location            String?
+  name                String?
+  owner               User                   @relation(fields: [id], references: [id])
+  id                  String                 @db.ObjectId
+  status              EnumStoreEntityStatus?
+  storeResources      StoreResource[]
+  storeType           String
+  updatedAt           DateTime               @updatedAt
+}
+
+model StoreResource {
+  createdAt   DateTime    @default(now())
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  resource    Resource    @relation(fields: [resourceId], references: [id])
+  resourceId  String      @db.ObjectId
+  stock       String
+  storeEntity StoreEntity @relation(fields: [id], references: [id])
+  id          String      @db.ObjectId
+  updatedAt   DateTime    @updatedAt
+}
+
+enum EnumStoreEntityStatus {
+  opening
+  closed
+  renovating
 }

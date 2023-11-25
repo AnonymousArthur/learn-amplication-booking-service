@@ -11,13 +11,27 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { BookingOrderListRelationFilter } from "../../bookingOrder/base/BookingOrderListRelationFilter";
+import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { StringFilter } from "../../util/StringFilter";
+import { StoreEntityListRelationFilter } from "../../storeEntity/base/StoreEntityListRelationFilter";
 
 @InputType()
 class UserWhereInput {
+  @ApiProperty({
+    required: false,
+    type: () => BookingOrderListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => BookingOrderListRelationFilter)
+  @IsOptional()
+  @Field(() => BookingOrderListRelationFilter, {
+    nullable: true,
+  })
+  bookingTransactions?: BookingOrderListRelationFilter;
+
   @ApiProperty({
     required: false,
     type: StringNullableFilter,
@@ -50,6 +64,30 @@ class UserWhereInput {
     nullable: true,
   })
   lastName?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => BookingOrderListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => BookingOrderListRelationFilter)
+  @IsOptional()
+  @Field(() => BookingOrderListRelationFilter, {
+    nullable: true,
+  })
+  owningBookingOrder?: BookingOrderListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => StoreEntityListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => StoreEntityListRelationFilter)
+  @IsOptional()
+  @Field(() => StoreEntityListRelationFilter, {
+    nullable: true,
+  })
+  storeEntities?: StoreEntityListRelationFilter;
 
   @ApiProperty({
     required: false,

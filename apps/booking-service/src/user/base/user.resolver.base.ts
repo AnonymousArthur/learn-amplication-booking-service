@@ -26,6 +26,10 @@ import { UserCountArgs } from "./UserCountArgs";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { User } from "./User";
+import { BookingOrderFindManyArgs } from "../../bookingOrder/base/BookingOrderFindManyArgs";
+import { BookingOrder } from "../../bookingOrder/base/BookingOrder";
+import { StoreEntityFindManyArgs } from "../../storeEntity/base/StoreEntityFindManyArgs";
+import { StoreEntity } from "../../storeEntity/base/StoreEntity";
 import { UserService } from "../user.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => User)
@@ -130,5 +134,65 @@ export class UserResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [BookingOrder], { name: "bookingTransactions" })
+  @nestAccessControl.UseRoles({
+    resource: "BookingOrder",
+    action: "read",
+    possession: "any",
+  })
+  async resolveFieldBookingTransactions(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: BookingOrderFindManyArgs
+  ): Promise<BookingOrder[]> {
+    const results = await this.service.findBookingTransactions(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [BookingOrder], { name: "owningBookingOrder" })
+  @nestAccessControl.UseRoles({
+    resource: "BookingOrder",
+    action: "read",
+    possession: "any",
+  })
+  async resolveFieldOwningBookingOrder(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: BookingOrderFindManyArgs
+  ): Promise<BookingOrder[]> {
+    const results = await this.service.findOwningBookingOrder(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [StoreEntity], { name: "storeEntities" })
+  @nestAccessControl.UseRoles({
+    resource: "StoreEntity",
+    action: "read",
+    possession: "any",
+  })
+  async resolveFieldStoreEntities(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: StoreEntityFindManyArgs
+  ): Promise<StoreEntity[]> {
+    const results = await this.service.findStoreEntities(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

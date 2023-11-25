@@ -27,6 +27,12 @@ import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserUpdateInput } from "./UserUpdateInput";
 import { User } from "./User";
+import { BookingOrderFindManyArgs } from "../../bookingOrder/base/BookingOrderFindManyArgs";
+import { BookingOrder } from "../../bookingOrder/base/BookingOrder";
+import { BookingOrderWhereUniqueInput } from "../../bookingOrder/base/BookingOrderWhereUniqueInput";
+import { StoreEntityFindManyArgs } from "../../storeEntity/base/StoreEntityFindManyArgs";
+import { StoreEntity } from "../../storeEntity/base/StoreEntity";
+import { StoreEntityWhereUniqueInput } from "../../storeEntity/base/StoreEntityWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -199,5 +205,355 @@ export class UserControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/bookingTransactions")
+  @ApiNestedQuery(BookingOrderFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "BookingOrder",
+    action: "read",
+    possession: "any",
+  })
+  async findManyBookingTransactions(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<BookingOrder[]> {
+    const query = plainToClass(BookingOrderFindManyArgs, request.query);
+    const results = await this.service.findBookingTransactions(params.id, {
+      ...query,
+      select: {
+        bookingNo: true,
+        createdAt: true,
+
+        createdBy: {
+          select: {
+            id: true,
+          },
+        },
+
+        id: true,
+
+        owner: {
+          select: {
+            id: true,
+          },
+        },
+
+        resource: {
+          select: {
+            id: true,
+          },
+        },
+
+        storeEntity: {
+          select: {
+            id: true,
+          },
+        },
+
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/bookingTransactions")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async connectBookingTransactions(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: BookingOrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      bookingTransactions: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/bookingTransactions")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async updateBookingTransactions(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: BookingOrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      bookingTransactions: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/bookingTransactions")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectBookingTransactions(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: BookingOrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      bookingTransactions: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/owningBookingOrder")
+  @ApiNestedQuery(BookingOrderFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "BookingOrder",
+    action: "read",
+    possession: "any",
+  })
+  async findManyOwningBookingOrder(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<BookingOrder[]> {
+    const query = plainToClass(BookingOrderFindManyArgs, request.query);
+    const results = await this.service.findOwningBookingOrder(params.id, {
+      ...query,
+      select: {
+        bookingNo: true,
+        createdAt: true,
+
+        createdBy: {
+          select: {
+            id: true,
+          },
+        },
+
+        id: true,
+
+        owner: {
+          select: {
+            id: true,
+          },
+        },
+
+        resource: {
+          select: {
+            id: true,
+          },
+        },
+
+        storeEntity: {
+          select: {
+            id: true,
+          },
+        },
+
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/owningBookingOrder")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async connectOwningBookingOrder(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: BookingOrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      owningBookingOrder: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/owningBookingOrder")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async updateOwningBookingOrder(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: BookingOrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      owningBookingOrder: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/owningBookingOrder")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectOwningBookingOrder(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: BookingOrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      owningBookingOrder: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/storeEntities")
+  @ApiNestedQuery(StoreEntityFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "StoreEntity",
+    action: "read",
+    possession: "any",
+  })
+  async findManyStoreEntities(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<StoreEntity[]> {
+    const query = plainToClass(StoreEntityFindManyArgs, request.query);
+    const results = await this.service.findStoreEntities(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        location: true,
+        name: true,
+
+        owner: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        storeType: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/storeEntities")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async connectStoreEntities(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StoreEntityWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      storeEntities: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/storeEntities")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async updateStoreEntities(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StoreEntityWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      storeEntities: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/storeEntities")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectStoreEntities(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: StoreEntityWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      storeEntities: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

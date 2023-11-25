@@ -11,13 +11,28 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional } from "class-validator";
+import { BookingOrderCreateNestedManyWithoutUsersInput } from "./BookingOrderCreateNestedManyWithoutUsersInput";
+import { ValidateNested, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
 import { IsJSONValue } from "@app/custom-validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
+import { StoreEntityCreateNestedManyWithoutUsersInput } from "./StoreEntityCreateNestedManyWithoutUsersInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => BookingOrderCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => BookingOrderCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => BookingOrderCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  bookingTransactions?: BookingOrderCreateNestedManyWithoutUsersInput;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -41,6 +56,18 @@ class UserCreateInput {
   lastName?: string | null;
 
   @ApiProperty({
+    required: false,
+    type: () => BookingOrderCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => BookingOrderCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => BookingOrderCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  owningBookingOrder?: BookingOrderCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
@@ -54,6 +81,18 @@ class UserCreateInput {
   @IsJSONValue()
   @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => StoreEntityCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => StoreEntityCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => StoreEntityCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  storeEntities?: StoreEntityCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: true,
